@@ -10,15 +10,20 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
+from api.chatgpt_service import summarize_text
 
 # from models import Person
+
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../public/')
 app = Flask(__name__)
 app.url_map.strict_slashes = False
-
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -69,4 +74,7 @@ def serve_any_other_file(path):
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
+    
+    text = "Este es un texto de prueba para resumir."
+    print(summarize_text(text))
     app.run(host='0.0.0.0', port=PORT, debug=True)
